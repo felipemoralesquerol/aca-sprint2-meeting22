@@ -1,8 +1,8 @@
 // Importación de modelos
-const cuentaBancaria = require('../models/cuentaBancaria');
+const { cuentaBancariaModel, contactoModel } = require('../models/cuentaBancaria');
 
 exports.cuentaBancariaList = async function (req, res, next) {
-    const todos = await platos.find();
+    const todos = await cuentaBancariaModel.find();
     console.log(todos);
     res.json(todos);
 };
@@ -12,11 +12,12 @@ exports.cuentaBancariaExistePorEmail = async function (req, res, next) {
     console.log(req.body);
 
     //Busqueda estricta (por coincidencia total)
-    const filtrado = await cuentaBancaria.find({ codigo: req.body.email });
-    console.log(filtrado.length);
+    const filtrado = await cuentaBancariaModel.find({ email: req.params.email });
+    console.log(filtrado);
     if (filtrado.length == 0) {
         return res.status(404).json({ mensaje: 'Cuenta Bancaria inexistente' })
     } else {
+        console.log('Cuenta Bancaria encontrado por email: ' + req.params.email);
         next();
     }
 
@@ -29,7 +30,7 @@ exports.cuentaBancariaListPorNombre = async function (req, res, next) {
     //const filtrado = await cuentaBancaria.find(req.query);
 
     //Busqueda con inclusión (en cualquier parte del nombre) Fuente: https://masteringjs.io/tutorials/mongoose/find-like
-    const filtrado = await cuentaBancaria.find({ nombre: { $regex: req.query.nombre } });
+    const filtrado = await cuentaBancariaModel.find({ nombre: { $regex: req.query.nombre } });
 
     console.log(filtrado);
     res.json(filtrado);
@@ -41,22 +42,23 @@ exports.cuentaBancariaListPorNombre = async function (req, res, next) {
 exports.cuentaBancariaCount = async function (req, res, next) {
     // TODO: Tomar datos del body
     //const filtro = {};
-    const count = await platos.find().countDocuments();
+    const count = await cuentaBancariaModel.find().countDocuments();
     console.log(count);
     res.json({ cantidad: count });
 };
 
-exports.cuentaBancariasAdd = async function (req, res, next) {
+exports.cuentaBancariaAdd = async function (req, res, next) {
     console.log(req.body);
-    let dato = new cuentaBancaria(req.body);
-    dato.save(); //es una promesa
+    let dato = new cuentaBancariaModel(req.body);
+    await dato.save(); //es una promesa
     res.json(dato);
 };
+
 
 exports.cuentaBancariaDelete = async function (req, res, next) {
     //TODO: Controlar cuando se intenta borrar con un id "alterado"
     try {
-        const cant = await cuentaBancaria.deleteOne({ codigo: req.params.email }, (err, result) => {
+        const cant = await cuentaBancariaModel.deleteOne({ email: req.params.email }, (err, result) => {
             if (err) {
                 return res.send(console.log(err.message));
             } else {
@@ -77,10 +79,10 @@ exports.cuentaBancariaDelete = async function (req, res, next) {
 exports.cuentaBancariaUpdate = async function (req, res, next) {
     //TODO: Controlar cuando se intenta borrar con un id "alterado"
     try {
-        if (req.params.codigo !== req.body.codigo) {
+        if (req.params.email !== req.body.email) {
             return res.status(404).json('Actualización descartada por incompatibilidad de código');
         };
-        const cant = await cuentaBancaria.updateOne({ codigo: req.params.email }, req.body, (err, result) => {
+        const cant = await cuentaBancariaModel.updateOne({ email: req.params.email }, req.body, (err, result) => {
             console.log('nuevo')
             console.log(err)
             if (err) {
@@ -91,6 +93,32 @@ exports.cuentaBancariaUpdate = async function (req, res, next) {
             };
         }
         );
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+};
+
+exports.cuentaBancariaUpdateAddPuntoContacto = async function (req, res, next) {
+    //TODO: Controlar cuando se intenta borrar con un id "alterado"
+    //db.cuentabancarias.update({email:"felipe.morales.querol@gmail.com"},{$set: {puntoContado:[]}})
+    //db.cuentabancarias.update({email:"felipe.morales.querol@gmail.com"},{$push: {puntoContado:twitter}})
+
+    try {
+        console.log(req.params.email);
+        const cant = await cuentaBancariaModel.findOneAndUpdate({ email: req.params.email }, { puntoContacto: req.body }
+            , (err, result) => {
+                console.log(err)
+                if (err) {
+                    return res.send(console.log(err.message));
+                } else {
+                    console.log(result)
+                    return res.json('OK: Se actualizaron documentos embebidos');
+                };
+            }
+        );
+        //console.log(cant);
+        //return res.json(cant)
     }
     catch (err) {
         console.log(err.message);

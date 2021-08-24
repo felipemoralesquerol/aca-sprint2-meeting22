@@ -23,8 +23,10 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 //app.use('/productos', productosRouter);
-app.use('/', (req, res) => { res.json('Home Banking Acámica') })
-app.use('/cuentaBancaria', cuentaBancariaRouter);
+
+app.use('/cuentasBancarias', cuentaBancariaRouter);
+
+app.use('/version', (req, res) => { res.json('Home Banking Acámica v1.0') })
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log('Servicio iniciado en puerto ' + process.env.EXPRESS_PORT)

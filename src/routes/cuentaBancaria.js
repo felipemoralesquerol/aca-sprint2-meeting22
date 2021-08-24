@@ -6,13 +6,18 @@ const router = express.Router();
 // Controllers
 const cuentaBancariaController = require('../controllers/cuentaBancaria');
 
-// platos
-router.get('/', cuentaBancariaController.platosList);
-router.get('/search/', cuentaBancariaController.platosListPorNombre);
-router.get('/count', cuentaBancariaController.platosCount)
-router.post('/', cuentaBancariaController.platosAdd);
-router.delete('/:codigo', cuentaBancariaController.platosExistePorCodigo, platosController.platosDelete);
-router.put('/:codigo', cuentaBancariaController.platosExistePorCodigo, platosController.platosUpdate);
+// CuentasBancarias
+router.get('/', cuentaBancariaController.cuentaBancariaList);
+router.get('/search/', cuentaBancariaController.cuentaBancariaListPorNombre);
+router.get('/count', cuentaBancariaController.cuentaBancariaCount)
+router.post('/', cuentaBancariaController.cuentaBancariaAdd);
+router.delete('/:email', cuentaBancariaController.cuentaBancariaExistePorEmail, cuentaBancariaController.cuentaBancariaDelete);
+router.put('/:email', cuentaBancariaController.cuentaBancariaExistePorEmail, cuentaBancariaController.cuentaBancariaUpdate);
+
+
+// CuentasBancarias - Documentos embebidos
+router.post('/:email/puntoContacto', cuentaBancariaController.cuentaBancariaExistePorEmail,
+    cuentaBancariaController.cuentaBancariaUpdateAddPuntoContacto);
 
 
 module.exports = router;

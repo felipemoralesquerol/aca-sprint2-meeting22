@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 
 
 //const MONGODB_URI = 'mongodb://localhost/aca-s2-m21';
-const MONGODB_URI = 'mongodb://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASSWORD + '@'
+// TODO: Compatibilizar ambos formatos
+const MONGODB_URI1 = 'mongodb+srv://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASSWORD + '@'
     + process.env.MONGODB_HOST + ':'
     + process.env.MONGODB_PORT + '/'
-    + process.env.MONGODB_DB_NAME + '?authSource=admin';
+    + process.env.MONGODB_DB_NAME + 'authSource=admin';
+
+const MONGODB_URI = process.env.MONGODB_URI_ATLAS;
 console.log(MONGODB_URI)
 
 
