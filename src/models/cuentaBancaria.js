@@ -22,6 +22,9 @@ const CuentaBancariaSchema = new Schema({
     saldoInicial: {
         type: Number, required: true
     },
+    saldoActual: {
+        type: Number, required: true
+    },
     puntoContacto: ContactoSchema
 });
 

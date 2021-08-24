@@ -1,3 +1,6 @@
+// Conector a la base de datos
+const mongoose = require("mongoose");
+
 // Importación de modelos
 const { cuentaBancariaModel, contactoModel } = require('../models/cuentaBancaria');
 
@@ -123,4 +126,56 @@ exports.cuentaBancariaUpdateAddPuntoContacto = async function (req, res, next) {
     catch (err) {
         console.log(err.message);
     }
+};
+
+exports.cuentaBancariaTransferencia = async function (req, res, next) {
+    // Operaciones a nivel de conexión y de sesión sobre la base de datos
+    const conn = mongoose.connection;
+    const session = await conn.startSession();
+    session.startTransaction();
+    console.log('Conexión e Inicio de sesión');
+
+    try {
+        // Nota: Se asumen ambos emails validados previamente y distintos
+        console.log(req.body);
+        const origen = req.body.emailOrigen;
+        const destino = req.body.emailDestino;
+        const monto = Number(req.body.monto);
+
+        const cuentaOrigen = await cuentaBancariaModel.findOne({ email: origen });
+        const cuentaDestino = await cuentaBancariaModel.findOne({ email: destino });
+        console.log(cuentaOrigen.saldoActual);
+        console.log(cuentaDestino.saldoActual);
+
+        if (cuentaOrigen.saldoActual >= monto) {
+            cuentaOrigen.saldoActual = Number(cuentaOrigen.saldoActual) - monto;
+            cuentaDestino.saldoActual = Number(cuentaDestino.saldoActual) + monto;
+
+            // Salvado a nivel de base de datos
+            cuentaOrigen.save();
+            cuentaDestino.save();
+
+            // Confirmación de transacción
+            await session.commitTransaction();
+            res.status(201).json(`Transacción realizada correctamente!' Saldo Origen: ${cuentaOrigen.saldoActual} - Saldo Destino: ${cuentaDestino.saldoActual}`)
+        } else {
+            res.status(400).json('Saldo insuficiente en cuenta origen')
+        };
+    }
+    catch (err) {
+        console.log(err.message);
+        session.abortTransaction();
+        //TODO: Producction
+        //res.status(500).json("Error interno")
+
+        //TODO: Development
+        res.status(500).json(err.message);
+
+    }
+    finally {
+        // Cierre de sesion
+        session.endSession();
+        console.log('Cierre de sesión');
+    }
+
 };

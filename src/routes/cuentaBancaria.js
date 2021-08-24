@@ -19,6 +19,8 @@ router.put('/:email', cuentaBancariaController.cuentaBancariaExistePorEmail, cue
 router.post('/:email/puntoContacto', cuentaBancariaController.cuentaBancariaExistePorEmail,
     cuentaBancariaController.cuentaBancariaUpdateAddPuntoContacto);
 
+// CuentasBancarias - Operaciones
+router.post('/transferencia', cuentaBancariaController.cuentaBancariaTransferencia);
 
 module.exports = router;
 
