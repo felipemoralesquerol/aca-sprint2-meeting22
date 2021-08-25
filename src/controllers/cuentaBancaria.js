@@ -144,6 +144,10 @@ exports.cuentaBancariaTransferencia = async function (req, res, next) {
 
         const cuentaOrigen = await cuentaBancariaModel.findOne({ email: origen });
         const cuentaDestino = await cuentaBancariaModel.findOne({ email: destino });
+        // Excepcion en caso de cuenta no encontrada
+        if (!cuentaOrigen || !cuentaDestino) {
+            throw new Error('Cuenta/s bancaria/s no encontrada/s')
+        }
         console.log(cuentaOrigen.saldoActual);
         console.log(cuentaDestino.saldoActual);
 

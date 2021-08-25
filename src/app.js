@@ -26,7 +26,14 @@ app.use(morgan('combined'));
 
 app.use('/cuentasBancarias', cuentaBancariaRouter);
 
-app.use('/version', (req, res) => { res.json('Home Banking Acámica v1.0') })
+app.use('/version', (req, res) => {
+    const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+    admin.buildInfo(function (err, info) {
+        console.log(`Versión interna mongodb: ${info.version}`);
+        console.log(`Versión interna mongoose: ${mongoose.version}`);
+    });
+    res.json('Home Banking Acámica v1.0');
+})
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log('Servicio iniciado en puerto ' + process.env.EXPRESS_PORT)
