@@ -9,3 +9,5 @@
 - Cuentas bancarias
 
 
+# Instrucciones para desarrollar localmente
+### Renombrar el archivo .env.example a .env

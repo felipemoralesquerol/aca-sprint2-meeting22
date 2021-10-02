@@ -10,7 +10,7 @@ require('dotenv').config();
 //const Usuarios = require('./models/usuarios');
 
 
-//const productosRouter = require('./routes/productos');
+
 const cuentaBancariaRouter = require('./routes/cuentaBancaria');
 
 
